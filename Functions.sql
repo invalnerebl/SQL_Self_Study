@@ -1,3 +1,7 @@
+------------------------------------
+-- SCALAR FUNCTIONS
+------------------------------------
+
 CREATE FUNCTION UnitPricePlusOne
 (
     @Amount MONEY
@@ -35,3 +39,20 @@ GO
 
 SELECT DISTINCT EmployeeID, dbo.NumberOfOrders(EmployeeID) AS OrdNum
 FROM Orders
+
+------------------------------------
+-- INLINE TABLE FUNCTIONS
+------------------------------------
+
+
+CREATE FUNCTION OrderList(@EmployeeNumber INT)
+RETURNS TABLE AS RETURN
+(
+    SELECT *
+	FROM Orders
+	WHERE EmployeeID = @EmployeeNumber
+)
+
+-- SELECT OrderList(2) WRONG - WE CAN'T RETURN TABLE IN SELECT
+SELECT *
+FROM dbo.OrderList(2)
