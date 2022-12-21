@@ -2,6 +2,8 @@
 -- SCALAR FUNCTIONS
 ------------------------------------
 DROP FUNCTION IF EXISTS dbo.UnitPricePlusOne
+GO
+
 CREATE FUNCTION UnitPricePlusOne
 (
     @Amount MONEY
@@ -23,6 +25,9 @@ FROM Products
 DECLARE @myValue MONEY
 EXEC @myValue = dbo.UnitPricePlusOne @Amount = 1
 SELECT @myValue
+GO 
+
+DROP FUNCTION IF EXISTS dbo.NumberOfOrders
 GO
 
 CREATE FUNCTION NumberOfOrders(@EmployeeNumber INT)
@@ -39,12 +44,15 @@ GO
 
 SELECT DISTINCT EmployeeID, dbo.NumberOfOrders(EmployeeID) AS OrdNum
 FROM Orders
+GO
 
 ------------------------------------
 -- INLINE TABLE FUNCTIONS
 ------------------------------------
 
 DROP FUNCTION IF EXISTS dbo.OrderList
+GO
+
 CREATE FUNCTION OrderList(@EmployeeNumber INT)
 RETURNS TABLE AS RETURN
 (
@@ -52,21 +60,19 @@ RETURNS TABLE AS RETURN
 	FROM Orders
 	WHERE EmployeeID = @EmployeeNumber
 )
+GO
 
 -- SELECT OrderList(2) WRONG - WE CAN'T RETURN TABLE IN SELECT
 SELECT *
 FROM dbo.OrderList(2)
+GO
 
 ------------------------------------
 -- MULTI-STATEMENT TABLE FUNCTIONS
 ------------------------------------
 
-CREATE FUNCTION [dbo].[FunctionName]
-(
-    @param1 int,
-    @param2 char(5)
-)
-RETURNS @returntable TABLE 
+CREATE FUNCTION GetOrderByYear(@OrderDate DATETIME)
+RETURNS @OrderByYear TABLE 
 (
 	[c1] int,
 	[c2] char(5)
@@ -77,3 +83,4 @@ BEGIN
     SELECT @param1, @param2
     RETURN 
 END
+GO
