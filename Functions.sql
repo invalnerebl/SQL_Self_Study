@@ -1,7 +1,7 @@
 ------------------------------------
 -- SCALAR FUNCTIONS
 ------------------------------------
-
+DROP FUNCTION IF EXISTS dbo.UnitPricePlusOne
 CREATE FUNCTION UnitPricePlusOne
 (
     @Amount MONEY
@@ -44,7 +44,7 @@ FROM Orders
 -- INLINE TABLE FUNCTIONS
 ------------------------------------
 
-
+DROP FUNCTION IF EXISTS dbo.OrderList
 CREATE FUNCTION OrderList(@EmployeeNumber INT)
 RETURNS TABLE AS RETURN
 (
@@ -56,3 +56,24 @@ RETURNS TABLE AS RETURN
 -- SELECT OrderList(2) WRONG - WE CAN'T RETURN TABLE IN SELECT
 SELECT *
 FROM dbo.OrderList(2)
+
+------------------------------------
+-- MULTI-STATEMENT TABLE FUNCTIONS
+------------------------------------
+
+CREATE FUNCTION [dbo].[FunctionName]
+(
+    @param1 int,
+    @param2 char(5)
+)
+RETURNS @returntable TABLE 
+(
+	[c1] int,
+	[c2] char(5)
+)
+AS
+BEGIN
+    INSERT @returntable
+    SELECT @param1, @param2
+    RETURN 
+END
