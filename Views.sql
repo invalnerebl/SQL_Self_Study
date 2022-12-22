@@ -1,7 +1,7 @@
 DROP VIEW IF EXISTS TheWorstEmployees
 GO
 
-CREATE VIEW TheWorstEmployees
+CREATE VIEW TheWorstEmployees WITH ENCRYPTION
 AS
 SELECT TOP 5 PERCENT E.LastName, E.FirstName, COUNT(O.OrderID) AS NumberOfOrders
 FROM Orders O JOIN Employees E ON O.EmployeeID = E.EmployeeID
