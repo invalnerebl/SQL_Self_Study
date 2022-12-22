@@ -70,17 +70,38 @@ GO
 ------------------------------------
 -- MULTI-STATEMENT TABLE FUNCTIONS
 ------------------------------------
-
-CREATE FUNCTION GetOrderByYear(@OrderDate DATETIME)
+DROP FUNCTION IF EXISTS GetOrderStatus
+GO
+CREATE FUNCTION GetOrderStatus(@OrderDate DATETIME)
 RETURNS @OrderByYear TABLE 
 (
-	[c1] int,
-	[c2] char(5)
+	EmployeeID INT,
+	Status VARCHAR(30),
+	StatusCount INT
 )
 AS
 BEGIN
-    INSERT @returntable
-    SELECT @param1, @param2
-    RETURN 
+	WITH OrderStatus
+	AS
+    (SELECT OrderID, EmployeeID, CASE
+									WHEN ShippedDate > RequiredDate THEN 'Delayed'
+									WHEN (ShippedDate < RequiredDate) AND DATEDIFF(DAY, ShippedDate, RequiredDate) > 14 THEN 'Too early'
+									ELSE 'Timely'
+								END AS 'Status'
+
+	FROM Orders
+	WHERE YEAR(OrderDate) = YEAR(@OrderDate)
+	)
+	INSERT INTO @OrderByYear
+	SELECT EmployeeID
+		,  Status
+		,  Count(*)
+	FROM OrderStatus
+	GROUP BY EmployeeID
+		,	 Status 
+	RETURN
 END
 GO
+
+SELECT *
+FROM dbo.GetOrderStatus('1997-12-12')
